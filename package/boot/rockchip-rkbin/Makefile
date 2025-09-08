@@ -9,187 +9,121 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=https://github.com/rockchip-linux/rkbin.git
-PKG_SOURCE_DATE:=2024-02-22
-PKG_SOURCE_VERSION:=a2a0b89b6c8c612dca5ed9ed8a68db8a07f68bc0
-PKG_MIRROR_HASH:=39f15e5f8fac02026065b6747b355b93f4e06202783ae448c43607763211597c
+PKG_SOURCE_DATE:=2024-10-18
+PKG_SOURCE_VERSION:=12660714c81be85350a4092542e2ff599aa5adcb
+PKG_MIRROR_HASH:=30f8ba3ca250dac4c60d1b642e7b3436daf091ace67f600a3bfdd5983bfa98a6
 
 PKG_LICENSE_FILES:=LICENSE
 PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 
-include $(INCLUDE_DIR)/kernel.mk
-include $(INCLUDE_DIR)/trusted-firmware-a.mk
 include $(INCLUDE_DIR)/package.mk
 
-define Trusted-Firmware-A/Default
-  NAME:=Rockchip $(1) SoCs
-  BUILD_TARGET:=rockchip
+define Build/rkbin/Target
+  $(eval $(call rkbin/Default,$(1)))
+  $(eval $(call rkbin/$(1),$(1)))
+
+  define Package/rkbin-$(1)
+    SECTION:=boot
+    CATEGORY:=Boot Loaders
+    TITLE:=Rockchip rkbin for $(1) SoCs
+    DEPENDS:=$(DEPENDS)
+    VARIANT:=$(1)
+  endef
+
+  define Package/rkbin-$(1)/install
+  $$(Package/rkbin/install)
+  endef
 endef
 
-define Trusted-Firmware-A/rk3308
-  BUILD_SUBTARGET:=armv8
-  ATF:=rk33/rk3308_bl31_v2.26.elf
-  TPL:=rk33/rk3308_ddr_589MHz_uart2_m1_v2.07.bin
+define rkbin/rk3328
+  DEPENDS:=@TARGET_rockchip_armv8
+  ATF:=rk33/rk322xh_bl31_v1.49.elf
+  TPL:=rk33/rk3328_ddr_333MHz_v1.19.bin
+  SPL:=rk33/rk322xh_miniloader_v2.50.bin
 endef
 
-define Trusted-Firmware-A/rk3308-rock-pi-s
-  NAME:=Radxa ROCK Pi S
-  BUILD_SUBTARGET:=armv8
-  ATF:=rk33/rk3308_bl31_v2.26.elf
-  TPL:=rk33/rk3308_ddr_589MHz_uart0_m0_v2.07.bin
+define rkbin/rk3399
+  DEPENDS:=@TARGET_rockchip_armv8
+  ATF:=rk33/rk3399_bl31_v1.36.elf
+  TPL:=rk33/rk3399_ddr_800MHz_v1.30.bin
+  SPL:=rk33/rk3399_miniloader_v1.30.bin
 endef
 
-define Trusted-Firmware-A/rk3566
-  BUILD_SUBTARGET:=armv8
-  ATF:=rk35/rk3568_bl31_v1.44.elf
-  TPL:=rk35/rk3566_ddr_1056MHz_v1.21.bin
-endef
-
-define Trusted-Firmware-A/rk3568
-  BUILD_SUBTARGET:=armv8
-  ATF:=rk35/rk3568_bl31_v1.44.elf
-  TPL:=rk35/rk3568_ddr_1560MHz_v1.21.bin
-endef
-
-define Trusted-Firmware-A/rk3568-e25
-  NAME:=Radxa E25 board
-  BUILD_SUBTARGET:=armv8
-  ATF:=rk35/rk3568_bl31_v1.44.elf
-  TPL:=rk35/rk3568_ddr_1560MHz_uart2_m0_115200_v1.21.bin
-endef
-
-define Trusted-Firmware-A/rk3588
-  BUILD_SUBTARGET:=armv8
-  ATF:=rk35/rk3588_bl31_v1.45.elf
-  TPL:=rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.16.bin
-endef
-
-define Trusted-Firmware-A/rk3528
-  BUILD_SUBTARGET:=armv8
+define rkbin/rk3528
+  DEPENDS:=@TARGET_rockchip_armv8
   ATF:=rk35/rk3528_bl31_v1.17.elf
-  TPL:=rk35/rk3528_ddr_1056MHz_v1.09.bin
+  TPL:=rk35/rk3528_ddr_1056MHz_v1.10.bin
 endef
 
-define Trusted-Firmware-A/rk3576
-  BUILD_SUBTARGET:=armv8
-  ATF:=rk35/$$(ATF_FILE)
-  TPL:=rk35/$$(TPL_FILE)
+define rkbin/rk3566
+  DEPENDS:=@TARGET_rockchip_armv8
+  ATF:=rk35/rk3568_bl31_v1.44.elf
+  TPL:=rk35/rk3566_ddr_1056MHz_v1.23.bin
 endef
 
-define Trusted-Firmware-A/rk3588-lp4-1866
-$(call Trusted-Firmware-A/rk3588,$(1))
-  TPL:=$$(MOD_TPL)
+define rkbin/rk3568
+  DEPENDS:=@TARGET_rockchip_armv8
+  ATF:=rk35/rk3568_bl31_v1.44.elf
+  TPL:=rk35/rk3568_ddr_1560MHz_v1.23.bin
 endef
 
-define Trusted-Firmware-A/rk3588-uart2-115200
-$(call Trusted-Firmware-A/rk3588,$(1))
-  TPL:=$$(MOD_TPL)
+define rkbin/rk3576
+  DEPENDS:=@TARGET_rockchip_armv8
+  ATF:=rk35/rk3576_bl31_v1.12.elf
+  TPL:=rk35/rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.08.bin
 endef
 
+define rkbin/rk3588
+  DEPENDS:=@TARGET_rockchip_armv8
+  ATF:=rk35/rk3588_bl31_v1.47.elf
+  TPL:=rk35/rk3588_ddr_lp4_2112MHz_lp5_2400MHz_v1.18.bin
+endef
 
-TFA_TARGETS:= \
-	rk3308 \
-	rk3308-rock-pi-s \
+VARIANTS:= \
+	rk3328 \
+	rk3399 \
 	rk3528 \
 	rk3566 \
 	rk3568 \
-	rk3568-e25 \
 	rk3576 \
-	rk3588 \
-	rk3588-lp4-1866 \
-	rk3588-uart2-115200
-
-ifeq ($(BUILD_VARIANT),rk3308-rock-pi-s)
-  TPL_FILE:=rk3308_ddr_589MHz_uart0_m0_v2.07.bin
-  define Download/rk3308-tpl-rock-pi-s
-    FILE:=$(TPL_FILE)
-    URL:=https://github.com/radxa/rkbin/raw/5696fab20dcac57c1458f72dc7604ba60e553adf/bin/rk33/
-    HASH:=8a1a42df23cccb86a2dabc14a5c0e9227d64a51b9b83e9968ef5af3b30787f7d
-  endef
-
-  define Build/Prepare
-	$(eval $(call Download,rk3308-tpl-rock-pi-s))
-	$(call Build/Prepare/Default)
-
-	$(CP) $(DL_DIR)/$(TPL_FILE) $(PKG_BUILD_DIR)/bin/rk33/
-  endef
-endif
-
-ifeq ($(BUILD_VARIANT),rk3568-e25)
-  TPL_FILE:=rk3568_ddr_1560MHz_uart2_m0_115200_v1.21.bin
-  define Download/rk3568-tpl-e25
-    FILE:=$(TPL_FILE)
-    URL:=https://github.com/radxa/rkbin/raw/5696fab20dcac57c1458f72dc7604ba60e553adf/bin/rk35/
-    HASH:=1815f9649dc5661a3ef184b052da39286e51453a66f6ff53cc3e345d65dfabd4
-  endef
-
-  define Build/Prepare
-	$(eval $(call Download,rk3568-tpl-e25))
-	$(call Build/Prepare/Default)
-
-	$(CP) $(DL_DIR)/$(TPL_FILE) $(PKG_BUILD_DIR)/bin/rk35/
-  endef
-endif
-
-ifeq ($(BUILD_VARIANT),rk3576)
-  ATF_FILE:=rk3576_bl31_v1.15.elf
-  TPL_FILE:=rk3576_ddr_lp4_2112MHz_lp5_2736MHz_v1.09.bin
-  define Download/rk3576-atf
-    FILE:=$(ATF_FILE)
-    URL:=https://github.com/rockchip-linux/rkbin/raw/f43a462e7a1429a9d407ae52b4745033034a6cf9/bin/rk35/
-    HASH:=86c1c3e449612bd4ed045da187e58042e3dfb582f14bf5bd3e0954874095a581
-  endef
-  define Download/rk3576-tpl
-    FILE:=$(TPL_FILE)
-    URL:=https://github.com/rockchip-linux/rkbin/raw/f43a462e7a1429a9d407ae52b4745033034a6cf9/bin/rk35/
-    HASH:=79bdf7eb259274eec83ea2f6330214b0c0035255bc5563746871f6f8ce7cf089
-  endef
-
-  define Build/Prepare
-	$(eval $(call Download,rk3576-atf))
-	$(eval $(call Download,rk3576-tpl))
-	$(call Build/Prepare/Default)
-
-	$(CP) $(DL_DIR)/$(ATF_FILE) $(PKG_BUILD_DIR)/bin/rk35/
-	$(CP) $(DL_DIR)/$(TPL_FILE) $(PKG_BUILD_DIR)/bin/rk35/
-  endef
-endif
-
-ifeq ($(BUILD_VARIANT),rk3588-lp4-1866)
-$(eval $(call Trusted-Firmware-A/rk3588,$(BUILD_VARIANT)))
-  SRC_TPL:=$(TPL)
-  MOD_TPL:=$(subst _lp4_2112MHz_,_lp4_1866MHz_,$(TPL))
-
-  define Build/Prepare
-	$(call Build/Prepare/Default)
-
-	$(STAGING_DIR_HOST)/bin/sed 's/^lp4_freq=.*/lp4_freq=1866/' $(PKG_BUILD_DIR)/tools/ddrbin_param.txt > $(PKG_BUILD_DIR)/tools/ddrbin_param_lp4-1866.txt
-	$(CP) $(PKG_BUILD_DIR)/bin/$(SRC_TPL) $(PKG_BUILD_DIR)/bin/$(MOD_TPL)
-	$(PKG_BUILD_DIR)/tools/ddrbin_tool rk3588 $(PKG_BUILD_DIR)/tools/ddrbin_param_lp4-1866.txt $(PKG_BUILD_DIR)/bin/$(MOD_TPL)
-  endef
-endif
-
-ifeq ($(BUILD_VARIANT),rk3588-uart2-115200)
-$(eval $(call Trusted-Firmware-A/rk3588,$(BUILD_VARIANT)))
-  SRC_TPL:=$(TPL)
-  MOD_TPL:=$(subst MHz_v,MHz_uart2_115200_v,$(TPL))
-
-  define Build/Prepare
-	$(call Build/Prepare/Default)
-
-	$(STAGING_DIR_HOST)/bin/sed 's/^uart baudrate=.*/uart baudrate=115200/' $(PKG_BUILD_DIR)/tools/ddrbin_param.txt > $(PKG_BUILD_DIR)/tools/ddrbin_param_uart2-115200.txt
-	$(CP) $(PKG_BUILD_DIR)/bin/$(SRC_TPL) $(PKG_BUILD_DIR)/bin/$(MOD_TPL)
-	$(PKG_BUILD_DIR)/tools/ddrbin_tool rk3588 $(PKG_BUILD_DIR)/tools/ddrbin_param_uart2-115200.txt $(PKG_BUILD_DIR)/bin/$(MOD_TPL)
-  endef
-endif
+	rk3588
 
 define Build/Compile
+	@echo Building idbLoader from Rockchip rkbin project...
+ifneq ($(SPL),)
+	( \
+		pushd $(PKG_BUILD_DIR) ; \
+		$(SED) 's,$$$$(PKG_BUILD_DIR),$(PKG_BUILD_DIR),g' trust.ini ; \
+		$(SED) 's,$$$$(VARIANT),$(BUILD_VARIANT),g' trust.ini ; \
+		./tools/mkimage -n $(BUILD_VARIANT) -T rksd -d bin/$(TPL) \
+			$(BUILD_VARIANT)-idbloader.bin ; \
+		cat bin/$(SPL) >> $(BUILD_VARIANT)-idbloader.bin ; \
+		./tools/trust_merger --replace bl31.elf bin/$(ATF) trust.ini ; \
+		popd ; \
+	)
+endif
 endef
 
-define Package/trusted-firmware-a/install
+define BuildPackage/rkbin
+  $(foreach type,$(if $(DUMP),$(VARIANTS),$(BUILD_VARIANT)), \
+    $(eval $(call Build/rkbin/Target,$(type)))
+  )
+  $(eval $(call Build/DefaultTargets))
+  $(foreach type,$(if $(DUMP),$(VARIANTS),$(BUILD_VARIANT)), \
+    $(call BuildPackage,rkbin-$(type))
+  )
+endef
+
+define Package/rkbin/install
 	$(INSTALL_DIR) $(STAGING_DIR_IMAGE)
 
 	$(CP) $(PKG_BUILD_DIR)/bin/$(ATF) $(STAGING_DIR_IMAGE)/
 	$(CP) $(PKG_BUILD_DIR)/bin/$(TPL) $(STAGING_DIR_IMAGE)/
+ifneq ($(SPL),)
+	$(CP) $(PKG_BUILD_DIR)/tools/loaderimage $(STAGING_DIR_IMAGE)/
+	$(CP) $(PKG_BUILD_DIR)/$(BUILD_VARIANT)-idbloader.bin $(STAGING_DIR_IMAGE)/
+	$(CP) $(PKG_BUILD_DIR)/$(BUILD_VARIANT)-trust.bin $(STAGING_DIR_IMAGE)/
+endif
 endef
 
-$(eval $(call BuildPackage/Trusted-Firmware-A))
+$(eval $(call BuildPackage/rkbin))
